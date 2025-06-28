@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Star, Moon } from 'lucide-react';
 import PhoneMockup from './PhoneMockup';
 
-const Hero = () => {
+const Hero = ({setShowWizard}:{setShowWizard:(value: React.SetStateAction<boolean>) => void}) => {
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-primary-900 via-mystical-900 to-primary-800 overflow-hidden">
       
@@ -43,7 +43,7 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              <button onClick={()=>setShowWizard(true)} className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                 Start Free Reading
               </button>
               <button className="border-2 border-mystical-400 text-mystical-300 hover:bg-mystical-400 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300">
