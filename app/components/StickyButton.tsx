@@ -22,7 +22,7 @@ const StickyButton = () => {
 
   return (
     <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up">
-      <button className="bg-gradient-to-r from-gold-500 to-mystical-500 hover:from-gold-600 hover:to-mystical-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3">
+      <button className="text-sm md:text-lg bg-gradient-to-r from-gold-500 to-mystical-500 hover:from-gold-600 hover:to-mystical-600 text-white px-8 py-4 rounded-full font-semibold shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 whitespace-nowrap">
         <Sparkles className="w-5 h-5" />
         Get Free Reading
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
