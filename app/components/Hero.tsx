@@ -5,7 +5,7 @@ import PhoneMockup from './PhoneMockup';
 const Hero = () => {
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-primary-900 via-mystical-900 to-primary-800 overflow-hidden">
-      {/* Animated background elements */}
+      
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 animate-float">
           <Star className="w-6 h-6 text-gold-400 opacity-60" />
