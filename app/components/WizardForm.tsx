@@ -31,29 +31,34 @@ const WizardForm = () => {
   });
 
   const [suggestions, setSuggestions] = useState<any[]>([]);
-const debouncedSearch = useDebounce(formData.birthplace, 300);
+  const [selectedBirthplace, setSelectedBirthplace] = useState<string>("");
+  const debouncedSearch = useDebounce(formData.birthplace, 300);
 
   useEffect(() => {
-  const searchCities = async () => {
-    if (!debouncedSearch) {
+    if (formData.birthplace === selectedBirthplace) {
       setSuggestions([]);
       return;
     }
-
-    try {
-      const res = await fetch(`/api/search-city?q=${debouncedSearch}`);
-      const data = await res.json();
-      if (suggestions.length>0 && suggestions[0]=="null") {
+    const searchCities = async () => {
+      if (!debouncedSearch) {
+        setSuggestions([]);
         return;
       }
-      setSuggestions(data?.hits || []);
-    } catch (error) {
-      console.error('City search failed', error);
-    }
-  };
 
-  searchCities();
-}, [debouncedSearch]);
+      try {
+        const res = await fetch(`/api/search-city?q=${debouncedSearch}`);
+        const data = await res.json();
+        if (suggestions.length > 0 && suggestions[0] == "null") {
+          return;
+        }
+        setSuggestions(data?.hits || []);
+      } catch (error) {
+        console.error('City search failed', error);
+      }
+    };
+
+    searchCities();
+  }, [debouncedSearch, formData.birthplace, selectedBirthplace]);
 
   const [errors, setErrors] = useState<Partial<FormData>>({});
 
@@ -93,6 +98,9 @@ const debouncedSearch = useDebounce(formData.birthplace, 300);
         break;
       case 3:
         if (!formData.birthplace.trim()) newErrors.birthplace = 'Birthplace is required';
+        if (!formData.lat) newErrors.lat = 'Latitude is required';
+        if (!formData.lng) newErrors.lng = 'Longitude is required';
+        if (!formData.timezone) newErrors.timezone = 'Timezone is required';
         break;
       case 4:
         if (!formData.focusArea) newErrors.focusArea = 'Please select a focus area';
@@ -113,6 +121,17 @@ const debouncedSearch = useDebounce(formData.birthplace, 300);
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
+  const convertTo24Hour = (time: string) => {
+    // Accepts 'hh:mm AM/PM' and returns 'HH:mm'
+    const match = time.match(/^(\d{1,2}):(\d{2})\s*([APap][Mm])$/);
+    if (!match) return time; // If not 12-hour format, return as is (assume 24-hour)
+    let [_, hour, minute, period] = match;
+    let h = parseInt(hour, 10);
+    if (period.toLowerCase() === 'pm' && h !== 12) h += 12;
+    if (period.toLowerCase() === 'am' && h === 12) h = 0;
+    return `${h.toString().padStart(2, '0')}:${minute}`;
+  };
+
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return;
 
@@ -123,8 +142,11 @@ const debouncedSearch = useDebounce(formData.birthplace, 300);
       const payload = {
         name: formData.fullName,
         dob: formData.dateOfBirth,
-        tob: formData.timeOfBirth,
+        tob: convertTo24Hour(formData.timeOfBirth),
         place: formData.birthplace,
+        lat: formData.lat,
+        lng: formData.lng,
+        timezone: formData.timezone,
         topic: formData.focusArea,
       };
       const response = await axios.post('/api/astro', payload, {
@@ -252,37 +274,47 @@ const debouncedSearch = useDebounce(formData.birthplace, 300);
                 type="text"
                 id="birthplace"
                 value={formData.birthplace}
-                onChange={(e) => updateFormData('birthplace', e.target.value)}
+                onChange={(e) => {
+                  updateFormData('birthplace', e.target.value);
+                  setSelectedBirthplace(""); // Reset selection if user types
+                }}
                 className={`w-full text-gray-800 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-mystical-500 focus:border-mystical-500 transition-colors ${
                   errors.birthplace ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="e.g., Mumbai, India"
               />
-              {suggestions.length > 0 && (
-  <ul className="mt-2 bg-white border rounded-xl shadow-sm max-h-48 overflow-y-auto">
-    {suggestions.map((city) => (
-      <li
-        key={city.id}
-        onClick={() => {
-          updateFormData('birthplace', `${city.city}, ${city.country}`);
-          updateFormData('lat',city.lat);
-          updateFormData('lng',city.lng);
-          updateFormData('timezone',city.timezone);
-          setSuggestions([])
-          
-        
-        }}
-        className="px-4 py-2 hover:bg-mystical-100 cursor-pointer text-sm text-gray-700"
-      >
-        {city.city}, {city.country}
-      </li>
-    ))}
-  </ul>
-)}
+              {suggestions.length > 0 && formData.birthplace !== selectedBirthplace && (
+                <ul className="mt-2 bg-white border rounded-xl shadow-sm max-h-48 overflow-y-auto">
+                  {suggestions.map((city) => (
+                    <li
+                      key={city.id}
+                      onClick={() => {
+                        const value = `${city.city}, ${city.country}`;
+                        updateFormData('birthplace', value);
+                        updateFormData('lat', city.lat);
+                        updateFormData('lng', city.lng);
+                        updateFormData('timezone', city.timezone);
+                        setSuggestions([]);
+                        setSelectedBirthplace(value); // Mark as selected
+                      }}
+                      className="px-4 py-2 hover:bg-mystical-100 cursor-pointer text-sm text-gray-700"
+                    >
+                      {city.city}, {city.country}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {/* Show lat/lng if available */}
+              {formData.lat && formData.lng && (
+                <div className="mt-2 text-xs text-gray-600">
+                  <span>Latitude: {formData.lat}</span> &nbsp;|&nbsp; <span>Longitude: {formData.lng}</span>
+                </div>
+              )}
               {errors.birthplace && <p className="text-red-500 text-sm mt-1">{errors.birthplace}</p>}
-              <p className="text-sm text-gray-500 mt-1">
-                Enter city and country for accurate calculations
-              </p>
+              {errors.lat && <p className="text-red-500 text-sm mt-1">{errors.lat}</p>}
+              {errors.lng && <p className="text-red-500 text-sm mt-1">{errors.lng}</p>}
+              {errors.timezone && <p className="text-red-500 text-sm mt-1">{errors.timezone}</p>}
+              
             </div>
           </div>
         );

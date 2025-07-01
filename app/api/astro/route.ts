@@ -8,9 +8,9 @@ const openai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, dob, tob, place, topic } = await req.json()
+    const { name, dob, tob, place, topic, lat, lng, timezone } = await req.json()
 
-    if (!name || !dob || !tob || !place || !topic) {
+    if (!name || !dob || !tob || !place || !topic || !lat || !lng || !timezone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -33,6 +33,9 @@ Name: ${name}
 Date of Birth: ${dob}
 Time of Birth: ${tob}
 Place of Birth: ${place}
+Latitude: ${lat}
+Longitude: ${lng}
+Timezone: ${timezone}
 Lagna: ${mockChart.lagna}
 Moon Sign: ${mockChart.moonSign}
 Sun Sign: ${mockChart.sunSign}
@@ -44,7 +47,7 @@ Instructions:
 - Avoid clichés.
 - Keep the tone mystical but helpful.
     `.trim()
-
+    console.log(prompt)
     // STEP 3: Call OpenAI (GPT-4o or GPT-4)
     const response = await openai.chat.completions.create({
       model: 'gpt-4o', // or 'gpt-4'
