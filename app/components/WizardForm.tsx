@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { ChevronLeft, ChevronRight, Star, Heart, TrendingUp, Crown, Users } from 'lucide-react';
+import useDebounce from '../utils/useDebounded';
 
 interface FormData {
   fullName: string;
   gender: string;
   dateOfBirth: string;
+  lat:string,
+  lng:string,
+  timezone:string
   timeOfBirth: string;
   birthplace: string;
   focusArea: string;
@@ -19,8 +24,36 @@ const WizardForm = () => {
     dateOfBirth: '',
     timeOfBirth: '',
     birthplace: '',
+    lat:"",
+    lng:"",
+    timezone:"",
     focusArea: ''
   });
+
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+const debouncedSearch = useDebounce(formData.birthplace, 300);
+
+  useEffect(() => {
+  const searchCities = async () => {
+    if (!debouncedSearch) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/search-city?q=${debouncedSearch}`);
+      const data = await res.json();
+      if (suggestions.length>0 && suggestions[0]=="null") {
+        return;
+      }
+      setSuggestions(data?.hits || []);
+    } catch (error) {
+      console.error('City search failed', error);
+    }
+  };
+
+  searchCities();
+}, [debouncedSearch]);
 
   const [errors, setErrors] = useState<Partial<FormData>>({});
 
@@ -35,11 +68,15 @@ const WizardForm = () => {
   ];
 
   const updateFormData = (field: keyof FormData, value: string) => {
+    
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+    
+      
+    console.log(formData)
   };
 
   const validateStep = (step: number): boolean => {
@@ -82,17 +119,25 @@ const WizardForm = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('/api/astro', {
-        method: 'POST',
+      // Map frontend fields to backend expected keys
+      const payload = {
+        name: formData.fullName,
+        dob: formData.dateOfBirth,
+        tob: formData.timeOfBirth,
+        place: formData.birthplace,
+        topic: formData.focusArea,
+      };
+      const response = await axios.post('/api/astro', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
+        console.log(response)
         // Handle successful submission
         console.log('Form submitted successfully');
+        
         // You can redirect or show success message here
       } else {
         console.error('Submission failed');
@@ -141,7 +186,8 @@ const WizardForm = () => {
                     <input
                       type="radio"
                       name="gender"
-                      value={gender.toLowerCase()}
+                      value={gender.toLowerCase()
+                      }
                       checked={formData.gender === gender.toLowerCase()}
                       onChange={(e) => updateFormData('gender', e.target.value)}
                       className="sr-only"
@@ -212,6 +258,27 @@ const WizardForm = () => {
                 }`}
                 placeholder="e.g., Mumbai, India"
               />
+              {suggestions.length > 0 && (
+  <ul className="mt-2 bg-white border rounded-xl shadow-sm max-h-48 overflow-y-auto">
+    {suggestions.map((city) => (
+      <li
+        key={city.id}
+        onClick={() => {
+          updateFormData('birthplace', `${city.city}, ${city.country}`);
+          updateFormData('lat',city.lat);
+          updateFormData('lng',city.lng);
+          updateFormData('timezone',city.timezone);
+          setSuggestions([])
+          
+        
+        }}
+        className="px-4 py-2 hover:bg-mystical-100 cursor-pointer text-sm text-gray-700"
+      >
+        {city.city}, {city.country}
+      </li>
+    ))}
+  </ul>
+)}
               {errors.birthplace && <p className="text-red-500 text-sm mt-1">{errors.birthplace}</p>}
               <p className="text-sm text-gray-500 mt-1">
                 Enter city and country for accurate calculations
