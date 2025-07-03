@@ -53,7 +53,7 @@ const ChatDemo: React.FC = () => {
   };
 
   return (
-    <div className="h-[100dvh]">
+    <div className="h-[100dvh] flex flex-col">
       <AstroChat
         messages={messages}
         suggestions={suggestions}
@@ -63,7 +63,7 @@ const ChatDemo: React.FC = () => {
       />
       
       {/* Demo Controls */}
-      {/* <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
+      <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
         <div className="text-xs text-gray-600 mb-2">Demo Controls:</div>
         <button
           onClick={() => setIsPremium(!isPremium)}
@@ -75,7 +75,7 @@ const ChatDemo: React.FC = () => {
         >
           {isPremium ? 'Switch to Free' : 'Switch to Premium'}
         </button>
-      </div> */}
+      </div>
     </div>
   );
 };

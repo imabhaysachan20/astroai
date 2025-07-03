@@ -145,8 +145,8 @@ const ChatInput: React.FC<{
             disabled={!isPremium}
             className={`w-full px-4 py-3 pr-12 rounded-xl border-2 transition-all duration-200 ${
               isPremium
-                ? 'border-mystical-200 focus:border-mystical-500 focus:ring-2 focus:ring-mystical-200 bg-white'
-                : 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-500'
+                ? 'border-mystical-200 focus:border-mystical-500 focus:ring-2 focus:ring-mystical-200 bg-white text-gray-800'
+                : 'border-gray-200 bg-gray-50 cursor-not-allowed text-gray-800'
             }`}
           />
           
