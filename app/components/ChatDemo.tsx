@@ -53,7 +53,7 @@ const ChatDemo: React.FC = () => {
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-[100dvh]">
       <AstroChat
         messages={messages}
         suggestions={suggestions}
