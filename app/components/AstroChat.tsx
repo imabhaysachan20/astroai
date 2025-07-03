@@ -226,6 +226,43 @@ const AstroChat: React.FC<AstroChatProps> = ({
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState('100vh');
+
+  // Handle dynamic viewport height for mobile browsers
+  useEffect(() => {
+    const updateViewportHeight = () => {
+      // Use the visual viewport API if available (modern browsers)
+      if (window.visualViewport) {
+        setViewportHeight(`${window.visualViewport.height}px`);
+      } else {
+        // Fallback for older browsers
+        setViewportHeight(`${window.innerHeight}px`);
+      }
+    };
+
+    // Set initial height
+    updateViewportHeight();
+
+    // Listen for viewport changes
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportHeight);
+      window.visualViewport.addEventListener('scroll', updateViewportHeight);
+    } else {
+      window.addEventListener('resize', updateViewportHeight);
+      window.addEventListener('orientationchange', updateViewportHeight);
+    }
+
+    // Cleanup
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateViewportHeight);
+        window.visualViewport.removeEventListener('scroll', updateViewportHeight);
+      } else {
+        window.removeEventListener('resize', updateViewportHeight);
+        window.removeEventListener('orientationchange', updateViewportHeight);
+      }
+    };
+  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -246,22 +283,25 @@ const AstroChat: React.FC<AstroChatProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-primary-50 via-white to-mystical-50">
+    <div 
+      className="flex flex-col bg-gradient-to-br from-primary-50 via-white to-mystical-50 overflow-hidden"
+      style={{ height: viewportHeight }}
+    >
       {/* Header */}
-      <div className="bg-white border-b border-mystical-100 px-6 py-4 shadow-sm">
+      <div className="bg-white border-b border-mystical-100 px-4 sm:px-6 py-3 sm:py-4 shadow-sm flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-gradient-to-br from-mystical-500 to-primary-600 rounded-full flex items-center justify-center mr-3">
-              <Star className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-mystical-500 to-primary-600 rounded-full flex items-center justify-center mr-2 sm:mr-3">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-800">Cosmic Advisor</h1>
-              <p className="text-sm text-gray-600">Your AI Vedic Astrology Guide</p>
+              <h1 className="text-base sm:text-lg font-bold text-gray-800">Cosmic Advisor</h1>
+              <p className="text-xs sm:text-sm text-gray-600">Your AI Vedic Astrology Guide</p>
             </div>
           </div>
           
           {/* Premium Badge */}
-          <div className={`flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+          <div className={`flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
             isPremium 
               ? 'bg-gradient-to-r from-gold-100 to-mystical-100 text-gold-700 border border-gold-200'
               : 'bg-gray-100 text-gray-600 border border-gray-200'
@@ -282,16 +322,16 @@ const AstroChat: React.FC<AstroChatProps> = ({
       </div>
 
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 min-h-0">
         <div className="max-w-4xl mx-auto">
           {/* Welcome Message */}
           {messages.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gradient-to-br from-mystical-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-white" />
+            <div className="text-center py-8 sm:py-12">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-mystical-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Welcome to Your Cosmic Journey</h2>
-              <p className="text-gray-600 mb-6">I'm here to guide you through the mysteries of Vedic astrology</p>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">Welcome to Your Cosmic Journey</h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-6">I'm here to guide you through the mysteries of Vedic astrology</p>
               
               {/* Initial Suggestions */}
               <div className="flex flex-wrap justify-center gap-2">
@@ -342,7 +382,7 @@ const AstroChat: React.FC<AstroChatProps> = ({
       </div>
 
       {/* Input Area */}
-      <div className="bg-white border-t border-mystical-100 px-6 py-4">
+      <div className="bg-white border-t border-mystical-100 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0 safe-area-inset-bottom">
         <div className="max-w-4xl mx-auto">
           <ChatInput
             isPremium={isPremium}
