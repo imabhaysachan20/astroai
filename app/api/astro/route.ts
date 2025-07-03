@@ -35,16 +35,21 @@ const vedicApiRes = await axios.post(
 
     const chartData = vedicApiRes.data
     console.log(chartData)
-    const mockChart = {
-      lagna: 'Cancer',
-      moonSign: 'Gemini',
-      sunSign: 'Taurus',
-      currentDasha: 'Mercury → Rahu',
-    }
 
+    // Type guards for chartData
+    type ChartData = {
+      ascendant: { sign: string };
+      moon_nakshatra: string;
+      current_dasha: { current: string; ends: string };
+      planetary_positions: Record<string, { degree: number; sign: string; house: number }>;
+    };
+    const safeChartData = chartData as ChartData;
 
+    // Type for prompts
+    type PromptKeys = keyof typeof prompts;
+    const safeTopic = topic as PromptKeys;
 
-   const prompt = `
+    const prompt = `
 You are a kind, wise, and friendly astrologer speaking to someone who knows nothing about astrology.
 They just want simple, clear, and encouraging guidance about their career, based on their astrological chart.
 Your tone should be warm, approachable, and easy to understand — no technical jargon. Use relatable language, sprinkle in a few appropriate emojis, and make it fun and engaging to read.
@@ -58,15 +63,15 @@ Here are their birth details:
 - Place of Birth: ${place}
 
 Here is the astrological chart data:
-- Ascendant Sign: ${chartData.ascendant.sign}
-- Moon Nakshatra: ${chartData.moon_nakshatra}
-- Current Mahadasha: ${chartData.current_dasha.current} (ends: ${chartData.current_dasha.ends})
+- Ascendant Sign: ${safeChartData.ascendant.sign}
+- Moon Nakshatra: ${safeChartData.moon_nakshatra}
+- Current Mahadasha: ${safeChartData.current_dasha.current} (ends: ${safeChartData.current_dasha.ends})
 - Planetary Positions:
-${Object.entries(chartData.planetary_positions).map(
+${Object.entries(safeChartData.planetary_positions).map(
   ([planet, pos]) => `  • ${planet}: ${pos.degree}° ${pos.sign} (House ${pos.house})`
 ).join('\n')}
 
-${prompts[topic]}
+${prompts[safeTopic]}
 
 `.trim()
 
