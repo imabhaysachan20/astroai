@@ -29,15 +29,57 @@ const ChatDemo: React.FC = () => {
     // Add user message
     setMessages(prev => [...prev, { sender: 'user', content: message }]);
 
+    const resp  = `Hello Abhaty! 🌟 I'm so happy to offer some guidance for your career based on your astrological chart. Don’t worry—I'll keep it simple, clear, and hopeful, so you can easily see what the stars suggest. 🌙✨
+
+Best-Suited and Probable Career Fields 🌱
+With your Cancer Ascendant, you're naturally caring, intuitive, and supportive. You might find fulfillment in careers where you can nurture or guide others. Here are some areas that could be a great fit for you:
+
+Healthcare & Healing: Whether it’s through being a doctor, therapist, nurse, or counselor, you have a natural ability to care for others.
+
+Education & Teaching: Your intuitive nature combined with your emotional intelligence could make you an amazing teacher or mentor, especially in subjects like philosophy or psychology.
+
+Creative Arts: With your Moon in Sagittarius, you're likely drawn to exploring and expressing big ideas, so writing, storytelling, or any creative career could bring you joy.
+
+Hospitality or Social Work: Roles where you help people feel comfortable and supported—think social work, human resources, or event planning—would align with your nurturing personality.
+
+Phases of Your Career 🌿📈
+Your career will have some exciting highs and a few challenges along the way. Here’s a breakdown of when things will flow smoothly and when you might face some bumps:
+
+Early Career (Up to 2028):
+
+You're currently in your Ketu Mahadasha, which can bring a time of introspection, spiritual growth, and even some career uncertainty. It may feel like you're not yet sure what direction to take. Don’t worry—this is a time to explore your inner world and get clarity on what you truly want.
+
+It might not be the most outwardly successful period in terms of career breakthroughs, but this time is great for inner growth and discovering your true passions. Trust the process. 🌱
+
+Mid Career (Post-2028):
+
+After Ketu’s Mahadasha, you’ll enter a new phase (starting around 2028) that could bring clearer direction and more focus. The Rahu period (currently in your 8th House) will help you to manifest new opportunities and take bold steps forward. While you might face occasional hurdles, this phase will support your growth and transformation.
+
+Expect to be recognized for your unique talents and creativity. You may even shift careers or find a role that aligns more with your true calling.
+
+Peak Success Period (Around 2037 and Beyond):
+
+Saturn’s influence in your 9th House of wisdom and expansion suggests that around your late 30s or early 40s, you’ll have a moment of real maturity and clarity. This is when your long-term efforts will start to pay off, and you’ll reach a place of authority or mastery in your field.
+
+This could be the time when you’re really in your zone, feeling at peace with your career and enjoying the fruits of your hard work. 🌟
+
+Career Tips for You 📝
+Focus on nurturing your intuition and creativity. With the combination of your Cancer Ascendant and Moon in Sagittarius, you thrive in environments where you can explore ideas, think big, and help others.
+
+Avoid rushing into a “traditional” career path. Since you're in a Ketu period, it’s okay to take the time to figure out what feels authentic for you. Experiment, explore, and allow yourself to evolve.
+
+Develop patience and resilience. There may be times when things feel uncertain, but with your strong emotional intelligence and persistence, you’ll rise above any challenges.
+
+Embrace learning and teaching. Your chart shows you could excel in sharing wisdom or helping others grow—whether through formal education or informal guidance.
+
+One-Line Summary ✨
+Abhaty, your journey is one of growth, exploration, and finding deep fulfillment in a career that nurtures both your creative spirit and your natural desire to help others—trust that your true calling will emerge when the time is right. 🌈
+
+I hope this helps! You’re on an exciting path, and with patience and trust in yourself, you’ll find success in your own beautiful way. 🌟`
+    
     // Simulate bot response after delay
     setTimeout(() => {
-      const botResponses = [
-        "🔮 Based on your planetary positions, I see interesting developments in your love life during the next Venus transit. Your 7th house shows strong romantic potential between March and June.",
-        "💰 Your wealth indicators are quite promising! Jupiter's influence on your 2nd house suggests financial growth through partnerships or investments. The period around your next birthday looks particularly auspicious.",
-        "🌙 Your Moon sign reveals deep emotional intelligence. This is both your strength and your challenge - learning to trust your intuition while staying grounded in practical decisions.",
-        "⭐ The stars indicate a period of transformation ahead. Your Saturn return is approaching, which typically brings important life lessons and lasting positive changes.",
-        "🎯 Your career path shows multiple opportunities. Mars in your 10th house suggests leadership roles suit you well. Consider positions where you can guide and inspire others."
-      ];
+      const botResponses = resp.split("\n\n")
       
       const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
       setMessages(prev => [...prev, { sender: 'bot', content: randomResponse }]);

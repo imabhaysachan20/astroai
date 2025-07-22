@@ -73,6 +73,7 @@ ${Object.entries(safeChartData.planetary_positions).map(
 
 ${prompts[safeTopic]}
 
+Respond with clear short chat-like messages in markdown. Use headings, bold, lists, and short paragraphs where appropriate.
 `.trim()
 
     console.log(prompt)

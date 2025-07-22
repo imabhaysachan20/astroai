@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ChevronLeft, ChevronRight, Star, Heart, TrendingUp, Crown, Users } from 'lucide-react';
 import useDebounce from '../utils/useDebounded';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
   fullName: string;
@@ -29,7 +30,7 @@ const WizardForm = () => {
     timezone:"",
     focusArea: ''
   });
-
+  const router = useRouter();
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [selectedBirthplace, setSelectedBirthplace] = useState<string>("");
   const debouncedSearch = useDebounce(formData.birthplace, 300);
@@ -157,7 +158,8 @@ const WizardForm = () => {
 
       if (response.status === 200) {
         console.log(response)
-        // Handle successful submission
+        router.push("/chat")
+        // Handle successful submission 
         console.log('Form submitted successfully');
         
         // You can redirect or show success message here
